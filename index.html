@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Oceanz Vital — Content Dashboard</title>
+  <title>Oceanz Vital â Content Dashboard</title>
   <style>
-    /* ── Base ── */
+    /* ââ Base ââ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -41,7 +41,7 @@
         radial-gradient(ellipse at 80% 20%, rgba(5,100,140,0.06) 0%, transparent 50%);
     }
 
-    /* ── Header ── */
+    /* ââ Header ââ */
     header {
       border-bottom: 1px solid var(--border);
       background: rgba(5,14,26,0.9);
@@ -72,13 +72,13 @@
     }
     .header-meta strong { color: var(--ocean-bright); }
 
-    /* ── Main layout ── */
+    /* ââ Main layout ââ */
     main {
       max-width: 1100px; margin: 0 auto;
       padding: 2rem;
     }
 
-    /* ── Alerts banner ── */
+    /* ââ Alerts banner ââ */
     .alerts-section {
       margin-bottom: 2rem;
     }
@@ -103,7 +103,7 @@
       display: flex; align-items: center; gap: 10px;
     }
 
-    /* ── Section heading ── */
+    /* ââ Section heading ââ */
     .section-header {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 1rem;
@@ -118,7 +118,7 @@
       background: var(--ocean-mid); padding: 2px 10px; border-radius: 20px;
     }
 
-    /* ── Post cards ── */
+    /* ââ Post cards ââ */
     .posts-grid {
       display: flex; flex-direction: column; gap: 0.875rem;
     }
@@ -311,7 +311,7 @@
 <header>
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-wave">🌊</div>
+      <div class="logo-wave">ð</div>
       <div>
         <div class="logo-text">Oceanz Vital</div>
         <div class="logo-sub">Content Dashboard</div>
@@ -319,27 +319,27 @@
     </div>
     <div class="header-meta">
       <div>Next 7 days</div>
-      <div>Last updated: <strong id="last-updated">—</strong></div>
+      <div>Last updated: <strong id="last-updated">â</strong></div>
     </div>
   </div>
 </header>
 
 <main>
   <div class="config-notice" id="config-notice">
-    ⚙️ Running in demo mode — <a href="#">configure data source</a> to connect live Notion data.
+    âï¸ Running in demo mode â <a href="#">configure data source</a> to connect live Notion data.
   </div>
 
   <div class="alerts-section" id="alerts-section"></div>
 
   <div class="section-header">
     <span class="section-title">Upcoming Posts</span>
-    <span class="post-count" id="post-count">—</span>
+    <span class="post-count" id="post-count">â</span>
   </div>
 
   <div class="posts-grid" id="posts-grid">
     <div class="loading">
       <div class="spinner"></div>
-      Loading content calendar…
+      Loading content calendarâ¦
     </div>
   </div>
 </main>
@@ -347,15 +347,15 @@
 <div id="toast"></div>
 
 <script>
-  // ── Config ──────────────────────────────────────────────────────────────────
+  // ââ Config ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   // The scheduler updates data.json in this same GitHub repo.
   // When hosted on GitHub Pages this path resolves automatically.
   const DATA_URL = './data.json';
 
   // Cloudflare Worker URL for approve actions (set by scheduler setup)
-  const WORKER_URL = ''; // e.g. 'https://oceanz-dashboard.your-name.workers.dev'
+  const WORKER_URL = 'https://oceanzdashboard.axavier1975.workers.dev';
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
+  // ââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
@@ -388,13 +388,13 @@
     setTimeout(() => t.classList.remove('show'), 3500);
   }
 
-  // ── Approve action ───────────────────────────────────────────────────────────
+  // ââ Approve action âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   async function approvePost(postId, title, btn) {
     if (!WORKER_URL) {
-      showToast('⚙️ Worker URL not configured yet — set WORKER_URL in index.html', true);
+      showToast('âï¸ Worker URL not configured yet â set WORKER_URL in index.html', true);
       return;
     }
-    btn.textContent = 'Approving…';
+    btn.textContent = 'Approvingâ¦';
     btn.disabled = true;
     try {
       const res = await fetch(WORKER_URL, {
@@ -403,8 +403,8 @@
         body: JSON.stringify({ post_id: postId, action: 'approve' })
       });
       if (!res.ok) throw new Error(await res.text());
-      showToast(`✅ "${title}" approved — scheduler will post to Buffer tonight`);
-      btn.textContent = 'Approved ✓';
+      showToast(`â "${title}" approved â scheduler will post to Buffer tonight`);
+      btn.textContent = 'Approved â';
       btn.className = 'btn btn-disabled';
     } catch(e) {
       showToast('Error: ' + e.message, true);
@@ -413,11 +413,11 @@
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // ââ Render âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   function renderPosts(posts) {
     const grid = document.getElementById('posts-grid');
     if (!posts || !posts.length) {
-      grid.innerHTML = `<div class="empty-state"><div class="icon">🌊</div><p>No posts scheduled in the next 7 days.</p></div>`;
+      grid.innerHTML = `<div class="empty-state"><div class="icon">ð</div><p>No posts scheduled in the next 7 days.</p></div>`;
       return;
     }
 
@@ -441,10 +441,10 @@
       // Action buttons
       let actions = '';
       if (p.canva_url) {
-        actions += `<a class="btn btn-canva" href="${p.canva_url}" target="_blank">✏️ Review in Canva</a>`;
+        actions += `<a class="btn btn-canva" href="${p.canva_url}" target="_blank">âï¸ Review in Canva</a>`;
       }
       if (p.status === 'To Approve') {
-        actions += `<button class="btn btn-approve" onclick="approvePost('${p.id}','${p.title.replace(/'/g,"\\'")}',this)">✓ Approve</button>`;
+        actions += `<button class="btn btn-approve" onclick="approvePost('${p.id}','${p.title.replace(/'/g,"\\'")}',this)">â Approve</button>`;
       }
 
       return `
@@ -475,7 +475,7 @@
     );
 
     if (!urgent.length) {
-      section.innerHTML = `<div class="no-alerts">✅ No urgent posts — you're all good for the next 3 days.</div>`;
+      section.innerHTML = `<div class="no-alerts">â No urgent posts â you're all good for the next 3 days.</div>`;
     } else {
       section.innerHTML = urgent.map(p => {
         const days = typeof p.days_until === 'number' ? p.days_until : daysUntil(p.date);
@@ -483,16 +483,16 @@
                    : days === 1 ? 'posting <strong>tomorrow</strong>'
                    : `posting in <strong>${days} days</strong>`;
         return `<div class="alert-banner">
-          <span class="alert-icon">⚠️</span>
+          <span class="alert-icon">â ï¸</span>
           <div class="alert-text">
-            <strong>"${p.title}"</strong> is ${when} — status is <strong>${p.status || 'Not Started'}</strong>
+            <strong>"${p.title}"</strong> is ${when} â status is <strong>${p.status || 'Not Started'}</strong>
           </div>
         </div>`;
       }).join('');
     }
   }
 
-  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  // ââ Bootstrap âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
   async function init() {
     try {
       const res  = await fetch(DATA_URL + '?t=' + Date.now());
@@ -501,7 +501,7 @@
 
       const updated = data.generated_at
         ? new Date(data.generated_at).toLocaleString('en-NZ', { dateStyle:'medium', timeStyle:'short' })
-        : '—';
+        : 'â';
       document.getElementById('last-updated').textContent = updated;
 
       renderAlerts(data.posts);
@@ -517,7 +517,7 @@
     }
   }
 
-  // ── Demo data (shown before data.json is connected) ──────────────────────
+  // ââ Demo data (shown before data.json is connected) ââââââââââââââââââââââ
   function generateDemoData() {
     const today = new Date();
     const d = (offset, extra) => {
