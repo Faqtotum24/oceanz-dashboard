@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oceanz Vital — Content Dashboard</title>
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ocean-deep:   #050e1a;
+      --ocean-dark:   #0a1f35;
+      --ocean-mid:    #0d3254;
+      --ocean-teal:   #0a7ea4;
+      --ocean-bright: #14b8d4;
+      --ocean-foam:   #e0f7ff;
+      --text-primary: #f0f8ff;
+      --text-muted:   #7eaac4;
+      --border:       rgba(14,180,210,0.15);
+      --card-bg:      rgba(13,50,84,0.5);
+      --card-hover:   rgba(13,50,84,0.8);
+
+      --status-not-started: #4a5568;
+      --status-in-progress: #2b6cb0;
+      --status-to-approve:  #c05621;
+      --status-approved:    #276749;
+      --status-scheduled:   #086f83;
+      --status-published:   #234e52;
+      --status-urgent-bg:   rgba(197,48,48,0.2);
+      --status-urgent:      #fc8181;
+    }
+
+    body {
+      background: var(--ocean-deep);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(10,126,164,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(5,100,140,0.06) 0%, transparent 50%);
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(5,14,26,0.9);
+      backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 100;
+      padding: 0 2rem;
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-wave {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--ocean-teal), var(--ocean-bright));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 1rem; font-weight: 600; letter-spacing: 0.02em; }
+    .logo-sub  { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .header-meta {
+      text-align: right; font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;
+    }
+    .header-meta strong { color: var(--ocean-bright); }
+
+    /* ── Main layout ── */
+    main {
+      max-width: 1100px; margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Alerts banner ── */
+    .alerts-section {
+      margin-bottom: 2rem;
+    }
+    .alert-banner {
+      background: var(--status-urgent-bg);
+      border: 1px solid rgba(252,129,129,0.3);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex; align-items: flex-start; gap: 12px;
+      margin-bottom: 0.75rem;
+    }
+    .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .alert-text { font-size: 0.875rem; line-height: 1.5; }
+    .alert-text strong { color: var(--status-urgent); }
+    .no-alerts {
+      background: rgba(39,103,73,0.15);
+      border: 1px solid rgba(39,103,73,0.3);
+      border-radius: 10px;
+      padding: 0.875rem 1.25rem;
+      font-size: 0.875rem;
+      color: #68d391;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ── Section heading ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .post-count {
+      font-size: 0.75rem; color: var(--text-muted);
+      background: var(--ocean-mid); padding: 2px 10px; border-radius: 20px;
+    }
+
+    /* ── Post cards ── */
+    .posts-grid {
+      display: flex; flex-direction: column; gap: 0.875rem;
+    }
+
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      align-items: center;
+      gap: 1.25rem;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+    .post-card:hover {
+      background: var(--card-hover);
+      border-color: rgba(14,180,210,0.3);
+    }
+    .post-card.urgent {
+      border-color: rgba(252,129,129,0.35);
+      background: rgba(13,50,84,0.6);
+    }
+    .post-card.urgent::before {
+      content: '';
+      position: absolute;
+      inset: 0; border-radius: 12px;
+      box-shadow: inset 0 0 0 1px rgba(252,129,129,0.2);
+      pointer-events: none;
+    }
+    .post-card { position: relative; }
+
+    /* Date column */
+    .post-date-col {
+      text-align: center;
+      background: rgba(10,126,164,0.12);
+      border: 1px solid rgba(10,126,164,0.2);
+      border-radius: 8px;
+      padding: 0.625rem 0.5rem;
+    }
+    .post-date-day   { font-size: 1.6rem; font-weight: 700; line-height: 1; color: var(--ocean-bright); }
+    .post-date-month { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+    .post-date-dow   { font-size: 0.65rem; letter-spacing: 0.04em; color: var(--text-muted); margin-top: 1px; }
+
+    /* Info column */
+    .post-info { min-width: 0; }
+    .post-title {
+      font-size: 0.975rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 0.4rem;
+    }
+    .post-meta {
+      display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap;
+    }
+    .tag {
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 2px 8px; border-radius: 20px;
+      border: 1px solid;
+    }
+    .tag-pillar {
+      color: var(--ocean-bright);
+      border-color: rgba(14,180,210,0.3);
+      background: rgba(14,180,210,0.08);
+    }
+    .tag-format {
+      color: var(--text-muted);
+      border-color: rgba(100,150,180,0.25);
+      background: rgba(100,150,180,0.08);
+    }
+    .tag-days {
+      color: var(--status-urgent);
+      border-color: rgba(252,129,129,0.3);
+      background: rgba(252,129,129,0.08);
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 20px; border: 1px solid;
+      white-space: nowrap;
+    }
+    .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .status-not-started { color: #a0aec0; border-color: rgba(160,174,192,0.3); background: rgba(74,85,104,0.2); }
+    .status-in-progress { color: #63b3ed; border-color: rgba(99,179,237,0.3); background: rgba(43,108,176,0.2); }
+    .status-to-approve  { color: #f6ad55; border-color: rgba(246,173,85,0.35); background: rgba(192,86,33,0.2); }
+    .status-approved    { color: #68d391; border-color: rgba(104,211,145,0.3); background: rgba(39,103,73,0.2); }
+    .status-scheduled   { color: var(--ocean-bright); border-color: rgba(14,180,210,0.3); background: rgba(8,111,131,0.2); }
+    .status-published   { color: #81e6d9; border-color: rgba(129,230,217,0.3); background: rgba(35,78,82,0.2); }
+
+    /* Actions column */
+    .post-actions {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; font-weight: 600;
+      padding: 6px 14px; border-radius: 7px;
+      border: 1px solid; cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-approve {
+      color: #fff;
+      background: linear-gradient(135deg, #276749, #1a5238);
+      border-color: rgba(104,211,145,0.4);
+    }
+    .btn-approve:hover { background: linear-gradient(135deg, #2f7a56, #216040); filter: brightness(1.1); }
+    .btn-canva {
+      color: var(--ocean-bright);
+      background: rgba(14,180,210,0.08);
+      border-color: rgba(14,180,210,0.25);
+    }
+    .btn-canva:hover { background: rgba(14,180,210,0.15); }
+    .btn-disabled {
+      color: var(--text-muted);
+      background: transparent;
+      border-color: rgba(100,150,180,0.15);
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: #276749; color: #fff;
+      padding: 0.75rem 1.25rem; border-radius: 10px;
+      font-size: 0.875rem; font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transform: translateY(100px); opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.error { background: #9b2c2c; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-state p { font-size: 0.875rem; }
+
+    /* Loading */
+    .loading {
+      text-align: center; padding: 4rem;
+      color: var(--text-muted); font-size: 0.875rem;
+    }
+    .spinner {
+      width: 32px; height: 32px; margin: 0 auto 1rem;
+      border: 2px solid var(--ocean-mid);
+      border-top-color: var(--ocean-bright);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .post-card { grid-template-columns: 64px 1fr; }
+      .post-actions { grid-column: 1 / -1; flex-direction: row; justify-content: flex-end; }
+      main { padding: 1rem; }
+      .header-inner { gap: 1rem; }
+    }
+
+    /* Config notice */
+    .config-notice {
+      background: rgba(10,126,164,0.1);
+      border: 1px solid rgba(10,126,164,0.2);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    .config-notice.visible { display: block; }
+    .config-notice a { color: var(--ocean-bright); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-wave">🌊</div>
+      <div>
+        <div class="logo-text">Oceanz Vital</div>
+        <div class="logo-sub">Content Dashboard</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div>Next 7 days</div>
+      <div>Last updated: <strong id="last-updated">—</strong></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="config-notice" id="config-notice">
+    ⚙️ Running in demo mode — <a href="#">configure data source</a> to connect live Notion data.
+  </div>
+
+  <div class="alerts-section" id="alerts-section"></div>
+
+  <div class="section-header">
+    <span class="section-title">Upcoming Posts</span>
+    <span class="post-count" id="post-count">—</span>
+  </div>
+
+  <div class="posts-grid" id="posts-grid">
+    <div class="loading">
+      <div class="spinner"></div>
+      Loading content calendar…
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  // ── Config ──────────────────────────────────────────────────────────────────
+  // The scheduler updates data.json in this same GitHub repo.
+  // When hosted on GitHub Pages this path resolves automatically.
+  const DATA_URL = './data.json';
+
+  // Cloudflare Worker URL for approve actions (set by scheduler setup)
+  const WORKER_URL = ''; // e.g. 'https://oceanz-dashboard.your-name.workers.dev'
+
+  // ── Helpers ─────────────────────────────────────────────────────────────────
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  function statusClass(s) {
+    return 'status-' + (s || 'not-started').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z-]/g,'');
+  }
+  function statusLabel(s) { return s || 'Not Started'; }
+
+  function formatDate(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    return {
+      day:   d.getDate(),
+      month: MONTHS[d.getMonth()],
+      dow:   DAYS[d.getDay()]
+    };
+  }
+
+  function daysUntil(iso) {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const post  = new Date(iso + 'T00:00:00');
+    return Math.round((post - today) / 86400000);
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = isError ? 'error' : '';
+    void t.offsetWidth;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Approve action ───────────────────────────────────────────────────────────
+  async function approvePost(postId, title, btn) {
+    if (!WORKER_URL) {
+      showToast('⚙️ Worker URL not configured yet — set WORKER_URL in index.html', true);
+      return;
+    }
+    btn.textContent = 'Approving…';
+    btn.disabled = true;
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ post_id: postId, action: 'approve' })
+      });
+      if (!res.ok) throw new Error(await res.text());
+      showToast(`✅ "${title}" approved — scheduler will post to Buffer tonight`);
+      btn.textContent = 'Approved ✓';
+      btn.className = 'btn btn-disabled';
+    } catch(e) {
+      showToast('Error: ' + e.message, true);
+      btn.textContent = 'Approve';
+      btn.disabled = false;
+    }
+  }
+
+  // ── Render ───────────────────────────────────────────────────────────────────
+  function renderPosts(posts) {
+    const grid = document.getElementById('posts-grid');
+    if (!posts || !posts.length) {
+      grid.innerHTML = `<div class="empty-state"><div class="icon">🌊</div><p>No posts scheduled in the next 7 days.</p></div>`;
+      return;
+    }
+
+    document.getElementById('post-count').textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '');
+
+    grid.innerHTML = posts.map(p => {
+      const d       = formatDate(p.date);
+      const days    = typeof p.days_until === 'number' ? p.days_until : daysUntil(p.date);
+      const urgent  = p.urgent || (days <= 3 && !['Approved','Scheduled','Published'].includes(p.status));
+      const sClass  = statusClass(p.status);
+      const sLabel  = statusLabel(p.status);
+
+      const daysTag = days === 0
+        ? `<span class="tag tag-days">Today</span>`
+        : days === 1
+        ? `<span class="tag tag-days">Tomorrow</span>`
+        : urgent
+        ? `<span class="tag tag-days">${days}d away</span>`
+        : '';
+
+      // Action buttons
+      let actions = '';
+      if (p.canva_url) {
+        actions += `<a class="btn btn-canva" href="${p.canva_url}" target="_blank">✏️ Review in Canva</a>`;
+      }
+      if (p.status === 'To Approve') {
+        actions += `<button class="btn btn-approve" onclick="approvePost('${p.id}','${p.title.replace(/'/g,"\\'")}',this)">✓ Approve</button>`;
+      }
+
+      return `
+        <div class="post-card ${urgent ? 'urgent' : ''}">
+          <div class="post-date-col">
+            <div class="post-date-day">${d.day}</div>
+            <div class="post-date-month">${d.month}</div>
+            <div class="post-date-dow">${d.dow}</div>
+          </div>
+          <div class="post-info">
+            <div class="post-title">${p.title}</div>
+            <div class="post-meta">
+              <span class="status-badge ${sClass}">${sLabel}</span>
+              ${p.pillar ? `<span class="tag tag-pillar">${p.pillar}</span>` : ''}
+              <span class="tag tag-format">${p.format || 'Post'}</span>
+              ${daysTag}
+            </div>
+          </div>
+          <div class="post-actions">${actions}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderAlerts(posts) {
+    const section = document.getElementById('alerts-section');
+    const urgent  = (posts || []).filter(p =>
+      p.urgent || (daysUntil(p.date) <= 3 && !['Approved','Scheduled','Published'].includes(p.status))
+    );
+
+    if (!urgent.length) {
+      section.innerHTML = `<div class="no-alerts">✅ No urgent posts — you're all good for the next 3 days.</div>`;
+    } else {
+      section.innerHTML = urgent.map(p => {
+        const days = typeof p.days_until === 'number' ? p.days_until : daysUntil(p.date);
+        const when = days === 0 ? 'posting <strong>today</strong>'
+                   : days === 1 ? 'posting <strong>tomorrow</strong>'
+                   : `posting in <strong>${days} days</strong>`;
+        return `<div class="alert-banner">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-text">
+            <strong>"${p.title}"</strong> is ${when} — status is <strong>${p.status || 'Not Started'}</strong>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  async function init() {
+    try {
+      const res  = await fetch(DATA_URL + '?t=' + Date.now());
+      if (!res.ok) throw new Error('data.json not found');
+      const data = await res.json();
+
+      const updated = data.generated_at
+        ? new Date(data.generated_at).toLocaleString('en-NZ', { dateStyle:'medium', timeStyle:'short' })
+        : '—';
+      document.getElementById('last-updated').textContent = updated;
+
+      renderAlerts(data.posts);
+      renderPosts(data.posts);
+
+    } catch(e) {
+      // Show demo mode with sample data
+      document.getElementById('config-notice').classList.add('visible');
+      document.getElementById('last-updated').textContent = 'demo mode';
+      const demo = generateDemoData();
+      renderAlerts(demo);
+      renderPosts(demo);
+    }
+  }
+
+  // ── Demo data (shown before data.json is connected) ──────────────────────
+  function generateDemoData() {
+    const today = new Date();
+    const d = (offset, extra) => {
+      const dt = new Date(today);
+      dt.setDate(dt.getDate() + offset);
+      return Object.assign({ date: dt.toISOString().slice(0,10) }, extra);
+    };
+    return [
+      d(1, { id:'demo-1', title:'The Ocean Is a Biochemical Universe',   status:'To Approve',  pillar:'Marine science',     format:'Post', canva_url:'https://www.canva.com/folder/FAHFJ4_vu94', urgent:true }),
+      d(2, { id:'demo-2', title:'Life Begins With Microorganisms',        status:'In Progress', pillar:'Marine science',     format:'Post', canva_url:null, urgent:false }),
+      d(4, { id:'demo-3', title:'Healthy Cells Start With Lipids',        status:'Not Started', pillar:'Nutrition',          format:'Post', canva_url:null, urgent:false }),
+      d(5, { id:'demo-4', title:'Your Morning Ritual, Reimagined',        status:'Approved',    pillar:'Ritual / lifestyle', format:'Post', canva_url:'#', urgent:false }),
+      d(6, { id:'demo-5', title:'What the Ocean Knows About Inflammation',status:'Not Started', pillar:'Ocean origin stories',format:'Post', canva_url:null, urgent:false }),
+    ];
+  }
+
+  init();
+</script>
+</body>
+</html>
