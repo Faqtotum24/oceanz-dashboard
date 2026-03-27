@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-03-27T06:00:00",
-  "next_run": "2026-03-28T06:00:00",
+  "generated_at": "2026-03-27T18:36:07.305Z",
+  "next_run": "2026-03-28T05:00:00.000Z",
   "posts": [
     {
-      "id": "notion-page-id-here",
+      "id": "32fc3481-6374-8060-8075-fe78ee7f3787",
       "title": "The Ocean Is a Biochemical Universe",
-      "date": "2026-03-28",
-      "days_until": 1,
+      "date": "2026-03-30",
+      "days_until": 3,
       "status": "To Approve",
       "pillar": "Marine science",
       "format": "Post",
-      "canva_url": "https://www.canva.com/folder/FAHFJ4_vu94",
+      "canva_url": "https://www.canva.com/d/E7ZqfB7J4LCd3Xu",
       "notion_url": "https://www.notion.so/32fc3481637480608075fe78ee7f3787",
       "buffer_id": null,
       "urgent": true
@@ -18,8 +18,8 @@
   ],
   "alerts": [
     {
-      "post_id": "notion-page-id-here",
-      "message": "Posting tomorrow — needs approval"
+      "post_id": "32fc3481-6374-8060-8075-fe78ee7f3787",
+      "message": "Posting in 3 days — carousel ready, needs approval"
     }
   ]
 }
