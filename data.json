@@ -1,7 +1,35 @@
 {
-  "generated_at": "2026-03-28T08:08:42Z",
-  "next_run": "2026-03-29T06:00:00+13:00",
+  "generated_at": "2026-03-28T09:45:13Z",
+  "next_run": "2026-03-28T17:00:00Z",
   "posts": [
+    {
+      "id": "32fc3481-6374-80aa-bc04-d3e7ff4d23cb",
+      "title": "Industrial Fat Simplification",
+      "unique_id": "N0005",
+      "date": "2026-03-30",
+      "days_until": 2,
+      "status": "To Approve",
+      "pillar": "Nutrition",
+      "format": "Post",
+      "canva_url": "https://www.canva.com/folder/FAHFOLb-Hhc",
+      "notion_url": "https://www.notion.so/32fc3481637480aabc04d3e7ff4d23cb",
+      "buffer_id": null,
+      "urgent": true
+    },
+    {
+      "id": "32fc3481-6374-80dc-a79b-e7b7569ab668",
+      "title": "Marine Ecosystem Complexity",
+      "unique_id": "N0010",
+      "date": "2026-04-03",
+      "days_until": 6,
+      "status": "To Approve",
+      "pillar": "Nutrition",
+      "format": "Post",
+      "canva_url": "https://www.canva.com/folder/FAHFOXs9l7s",
+      "notion_url": "https://www.notion.so/32fc3481637480dca79be7b7569ab668",
+      "buffer_id": null,
+      "urgent": false
+    },
     {
       "id": "330c3481-6374-800b-983b-e2dafa4fccf5",
       "title": "The Reductionist Trap",
@@ -31,5 +59,7 @@
       "urgent": false
     }
   ],
-  "alerts": []
+  "alerts": [
+    "N0005 Industrial Fat Simplification is due in 2 days (2026-03-30) and is still To Approve - needs urgent review!"
+  ]
 }
