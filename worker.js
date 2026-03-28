@@ -50,6 +50,23 @@ export default {
       return json({ success: true, message: `Post ${post_id} marked as Approved` });
     }
 
+    // ── PROBE BUFFER (diagnostic) ─────────────────────────────────────────────
+    if (action === 'probe_buffer') {
+      if (!env.BUFFER_API_TOKEN) {
+        return json({ error: 'BUFFER_API_TOKEN not configured' }, 500);
+      }
+      const res = await fetch('https://api.buffer.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${env.BUFFER_API_TOKEN}`,
+        },
+        body: JSON.stringify({ query: '{ channels { id service username } }' }),
+      });
+      const data = await res.text();
+      return json({ http_status: res.status, body: data });
+    }
+
     // ── SCHEDULE TO BUFFER ───────────────────────────────────────────────────
     if (action === 'schedule_buffer') {
       const { text, media_urls, scheduled_at } = body;
@@ -60,53 +77,86 @@ export default {
         return json({ error: 'BUFFER_API_TOKEN not configured in Worker environment' }, 500);
       }
 
-      // Step 1: find the Instagram profile ID
-      const profilesRes = await fetch(
-        `https://api.bufferapp.com/1/profiles.json?access_token=${env.BUFFER_API_TOKEN}`
-      );
-      if (!profilesRes.ok) {
-        const errText = await profilesRes.text();
-        return json({ error: 'Failed to fetch Buffer profiles', http_status: profilesRes.status, detail: errText }, 500);
-      }
-      const profiles = await profilesRes.json();
-      const igProfile = profiles.find(p => p.service && p.service.toLowerCase().includes('instagram'));
-      if (!igProfile) {
-        return json({ error: 'No Instagram profile found in Buffer account', profiles: profiles.map(p => p.service) }, 400);
-      }
-
-      // Step 2: build the Buffer update payload
-      const params = new URLSearchParams();
-      params.append('access_token', env.BUFFER_API_TOKEN);
-      params.append('profile_ids[]', igProfile.id);
-      params.append('text', text);
-      if (scheduled_at) params.append('scheduled_at', String(scheduled_at));
-      // First image as main photo, all images as carousel thumbnails
-      params.append('media[photo]', media_urls[0]);
-      media_urls.forEach((url, i) => params.append(`media[thumbnails][${i}]`, url));
-
-      // Step 3: create the Buffer update
-      const bufferRes = await fetch('https://api.bufferapp.com/1/updates/create.json', {
+      // Step 1: find the Instagram channel ID via Buffer GraphQL API
+      const channelsRes = await fetch('https://api.buffer.com/graphql', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${env.BUFFER_API_TOKEN}`,
+        },
+        body: JSON.stringify({ query: '{ channels { id service username } }' }),
       });
-      const bufferData = await bufferRes.json();
-
-      if (!bufferRes.ok || bufferData.error) {
-        return json({ error: 'Buffer scheduling failed', detail: bufferData }, 500);
+      if (!channelsRes.ok) {
+        const errText = await channelsRes.text();
+        return json({ error: 'Failed to fetch Buffer channels', http_status: channelsRes.status, detail: errText }, 500);
+      }
+      const channelsData = await channelsRes.json();
+      if (channelsData.errors) {
+        return json({ error: 'Buffer channels query error', detail: channelsData.errors }, 500);
+      }
+      const channels = channelsData.data?.channels || [];
+      const igChannel = channels.find(c => c.service && c.service.toLowerCase().includes('instagram'));
+      if (!igChannel) {
+        return json({ error: 'No Instagram channel found in Buffer account', channels: channels.map(c => ({ service: c.service, username: c.username })) }, 400);
       }
 
-      // Step 4: update Notion status to Scheduled
+      // Step 2: schedule the post via GraphQL createPost mutation
+      const dueAt = scheduled_at
+        ? new Date(scheduled_at * 1000).toISOString()
+        : new Date(Date.now() + 3600000).toISOString(); // default: 1 hour from now
+
+      const assets = media_urls.map(url => ({ url }));
+
+      const mutation = `
+        mutation CreatePost($input: CreatePostInput!) {
+          createPost(input: $input) {
+            ... on PostActionSuccess { post { id scheduledAt } }
+            ... on MutationError { message type }
+          }
+        }
+      `;
+      const variables = {
+        input: {
+          channelId:      igChannel.id,
+          text,
+          schedulingType: 'scheduled',
+          mode:           'customSchedule',
+          dueAt,
+          assets,
+        },
+      };
+
+      const postRes = await fetch('https://api.buffer.com/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${env.BUFFER_API_TOKEN}`,
+        },
+        body: JSON.stringify({ query: mutation, variables }),
+      });
+      const postData = await postRes.json();
+
+      if (!postRes.ok || postData.errors) {
+        return json({ error: 'Buffer createPost failed', http_status: postRes.status, detail: postData }, 500);
+      }
+
+      const result = postData.data?.createPost;
+      if (result?.message) {
+        // MutationError
+        return json({ error: 'Buffer createPost mutation error', detail: result }, 500);
+      }
+
+      // Step 3: update Notion status to Scheduled
       if (post_id) {
         await updateNotionStatus(post_id, 'Scheduled', env);
       }
 
       return json({
         success: true,
-        buffer_update_id: bufferData.updates?.[0]?.id || bufferData.id,
-        instagram_profile: igProfile.service_username,
-        scheduled_at: bufferData.updates?.[0]?.scheduled_at || scheduled_at,
-        message: `Post scheduled to @${igProfile.service_username} via Buffer`,
+        buffer_post_id:  result?.post?.id,
+        instagram_channel: igChannel.username,
+        scheduled_at:    result?.post?.scheduledAt || dueAt,
+        message:         `Post scheduled to @${igChannel.username} via Buffer`,
       });
     }
 
