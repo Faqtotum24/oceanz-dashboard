@@ -65,7 +65,8 @@ export default {
         `https://api.bufferapp.com/1/profiles.json?access_token=${env.BUFFER_API_TOKEN}`
       );
       if (!profilesRes.ok) {
-        return json({ error: 'Failed to fetch Buffer profiles', detail: await profilesRes.text() }, 500);
+        const errText = await profilesRes.text();
+        return json({ error: 'Failed to fetch Buffer profiles', http_status: profilesRes.status, detail: errText }, 500);
       }
       const profiles = await profilesRes.json();
       const igProfile = profiles.find(p => p.service && p.service.toLowerCase().includes('instagram'));
