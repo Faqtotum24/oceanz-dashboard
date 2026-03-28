@@ -1,129 +1,17 @@
 {
-  "generated_at": "2026-03-27T06:00:00+00:00",
-  "next_run": "2026-03-28T06:00:00+00:00",
+  "generated_at": "2026-03-28T08:08:42Z",
+  "next_run": "2026-03-29T06:00:00+13:00",
   "posts": [
-    {
-      "id": "32fc3481-6374-80aa-bc04-d3e7ff4d23cb",
-      "title": "Industrial Fat Simplification",
-      "date": "2026-03-30",
-      "days_until": 3,
-      "status": "To Approve",
-      "pillar": "Nutrition",
-      "format": "Post",
-      "unique_id": "N0005",
-      "canva_url": "https://www.canva.com/folder/FAHFK_chiHo",
-      "notion_url": "https://www.notion.so/32fc3481637480aabc04d3e7ff4d23cb",
-      "buffer_id": null,
-      "urgent": true
-    },
-    {
-      "id": "32fc3481-6374-805b-ac86-d693f9f5c3cc",
-      "title": "Industrial Fat Simplification",
-      "date": "2026-04-06",
-      "days_until": 10,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0006",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc34816374805bac86d693f9f5c3cc",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-80e9-8c3f-ed95c8f78129",
-      "title": "Industrial Fat Simplification",
-      "date": "2026-04-13",
-      "days_until": 17,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0007",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc3481637480e98c3fed95c8f78129",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-806d-b0cf-cdf04349869b",
-      "title": "Industrial Fat Simplification",
-      "date": "2026-04-20",
-      "days_until": 24,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0008",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc34816374806db0cfcdf04349869b",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-80b6-a920-f217d563dce3",
-      "title": "Industrial Fat Simplification",
-      "date": "2026-04-20",
-      "days_until": 24,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0009",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc3481637480b6a920f217d563dce3",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-80e8-b226-d8097e730757",
-      "title": "Marine Ecosystem Complexity",
-      "date": "2026-04-10",
-      "days_until": 14,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0011",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc3481637480e8b226d8097e730757",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-80de-a119-c9034938251b",
-      "title": "Marine Ecosystem Complexity",
-      "date": "2026-04-17",
-      "days_until": 21,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0012",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc3481637480dea119c9034938251b",
-      "buffer_id": null,
-      "urgent": false
-    },
-    {
-      "id": "32fc3481-6374-80fa-a1d0-f41be0b99b17",
-      "title": "Marine Ecosystem Complexity",
-      "date": "2026-04-24",
-      "days_until": 28,
-      "status": "Not started",
-      "pillar": "Nutrition",
-      "format": "Reel",
-      "unique_id": "N0013",
-      "canva_url": null,
-      "notion_url": "https://www.notion.so/32fc3481637480faa1d0f41be0b99b17",
-      "buffer_id": null,
-      "urgent": false
-    },
     {
       "id": "330c3481-6374-800b-983b-e2dafa4fccf5",
       "title": "The Reductionist Trap",
+      "unique_id": "N0014",
       "date": "2026-04-07",
-      "days_until": 11,
-      "status": "Not started",
+      "days_until": 10,
+      "status": "To Approve",
       "pillar": "Nutrition",
       "format": "Post",
-      "unique_id": "N0014",
-      "canva_url": null,
+      "canva_url": "https://www.canva.com/folder/FAHFN2vk3Gw",
       "notion_url": "https://www.notion.so/330c34816374800b983be2dafa4fccf5",
       "buffer_id": null,
       "urgent": false
@@ -131,22 +19,17 @@
     {
       "id": "330c3481-6374-80bc-b3e5-e37e2545976e",
       "title": "A Broader view of Nutrition",
+      "unique_id": "N0019",
       "date": "2026-04-09",
-      "days_until": 13,
-      "status": "Not started",
+      "days_until": 12,
+      "status": "To Approve",
       "pillar": "Nutrition",
       "format": "Post",
-      "unique_id": "N0019",
-      "canva_url": null,
+      "canva_url": "https://www.canva.com/folder/FAHFN05O4ek",
       "notion_url": "https://www.notion.so/330c3481637480bcb3e5e37e2545976e",
       "buffer_id": null,
       "urgent": false
     }
   ],
-  "alerts": [
-    {
-      "post_id": "32fc3481-6374-80aa-bc04-d3e7ff4d23cb",
-      "message": "⚠️ N0005 \"Industrial Fat Simplification\" is due in 3 days (2026-03-30) and is still 'To Approve' — needs approval ASAP!"
-    }
-  ]
+  "alerts": []
 }
