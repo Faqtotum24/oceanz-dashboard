@@ -369,7 +369,7 @@
 <div id="toast"></div>
 
 <script>
-  // ── Config ─────────────────────────────────────────────────────────────────
+  // ── Config ──────────────────────────────────────────────────────────────────
   // The scheduler updates data.json in this same GitHub repo.
   // When hosted on GitHub Pages this path resolves automatically.
   const DATA_URL = './data.json';
@@ -425,15 +425,38 @@
         body: JSON.stringify({ post_id: postId, action: 'approve' })
       });
       if (!res.ok) throw new Error(await res.text());
-      showToast(`"${title}" approved — scheduler will post to Buffer tonight`);
+      showToast(`"${title}" approved ✓`);
+
+      // ── Optimistic UI update ──
+      // Update the card's status badge and remove the approve button immediately
+      const card = btn.closest('.post-card');
+      if (card) {
+        const badge = card.querySelector('.status-badge');
+        if (badge) {
+          badge.className = 'status-badge status-approved';
+          badge.textContent = 'Approved';
+        }
+        // Remove urgency styling (approved posts aren't urgent)
+        card.classList.remove('urgent');
+      }
       btn.textContent = 'Approved ✓';
       btn.className = 'btn btn-disabled';
+
+      // Also update the alerts section
+      if (currentPosts) {
+        const post = currentPosts.find(p => p.id === postId);
+        if (post) post.status = 'Approved';
+        renderAlerts(currentPosts);
+      }
     } catch(e) {
       showToast('Error: ' + e.message, true);
       btn.textContent = 'Approve';
       btn.disabled = false;
     }
   }
+
+  // Track current posts for optimistic updates
+  let currentPosts = null;
 
   // ── Render ───────────────────────────────────────────────────────────────────
   function renderPosts(posts) {
@@ -517,27 +540,60 @@
 
   // ── Bootstrap ─────────────────────────────────────────────────────────────
   async function init() {
-    try {
-      const res  = await fetch(DATA_URL + '?t=' + Date.now());
-      if (!res.ok) throw new Error('data.json not found');
-      const data = await res.json();
+    let data = null;
+    let source = 'unknown';
 
-      const updated = data.generated_at
-        ? new Date(data.generated_at).toLocaleString('en-NZ', { dateStyle:'medium', timeStyle:'short' })
-        : '—';
-      document.getElementById('last-updated').textContent = updated;
+    // Strategy 1: Fetch live from Worker (real-time Notion data)
+    if (WORKER_URL) {
+      try {
+        const ctrl = new AbortController();
+        const timeout = setTimeout(() => ctrl.abort(), 6000); // 6s timeout
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'fetch_posts' }),
+          signal: ctrl.signal
+        });
+        clearTimeout(timeout);
+        if (res.ok) {
+          data = await res.json();
+          source = 'live';
+        }
+      } catch(e) { /* Worker unavailable — fall through to data.json */ }
+    }
 
-      renderAlerts(data.posts);
-      renderPosts(data.posts);
+    // Strategy 2: Fall back to static data.json
+    if (!data) {
+      try {
+        const res = await fetch(DATA_URL + '?t=' + Date.now());
+        if (res.ok) {
+          data = await res.json();
+          source = 'cached';
+        }
+      } catch(e) { /* no data.json either */ }
+    }
 
-    } catch(e) {
-      // Show demo mode with sample data
+    // Strategy 3: Demo mode
+    if (!data || !data.posts) {
       document.getElementById('config-notice').classList.add('visible');
       document.getElementById('last-updated').textContent = 'demo mode';
       const demo = generateDemoData();
+      currentPosts = demo;
       renderAlerts(demo);
       renderPosts(demo);
+      return;
     }
+
+    // Show data source indicator
+    const updated = data.generated_at
+      ? new Date(data.generated_at).toLocaleString('en-NZ', { dateStyle:'medium', timeStyle:'short' })
+      : '—';
+    const sourceLabel = source === 'live' ? ' (live)' : ' (cached)';
+    document.getElementById('last-updated').textContent = updated + sourceLabel;
+
+    currentPosts = data.posts;
+    renderAlerts(data.posts);
+    renderPosts(data.posts);
   }
 
   // ── Demo data (shown before data.json is connected) ──────────────────────
