@@ -212,6 +212,11 @@
       border-color: rgba(100,150,180,0.25);
       background: rgba(100,150,180,0.08);
     }
+    .tag-format-reel {
+      color: #c084fc;
+      border-color: rgba(192,132,252,0.35);
+      background: rgba(192,132,252,0.1);
+    }
     .tag-days {
       color: var(--status-urgent);
       border-color: rgba(252,129,129,0.3);
@@ -505,7 +510,7 @@
             <div class="post-meta">
               <span class="status-badge ${sClass}">${sLabel}</span>
               ${p.pillar ? `<span class="tag tag-pillar">${p.pillar}</span>` : ''}
-              <span class="tag tag-format">${p.format || 'Post'}</span>
+              <span class="tag tag-format${(p.format || '').toLowerCase() === 'reel' ? ' tag-format-reel' : ''}">${p.format || 'Post'}</span>
               ${daysTag}
             </div>
           </div>
