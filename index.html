@@ -288,6 +288,27 @@
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.error { background: #9b2c2c; }
 
+    /* Published section */
+    .published-section {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    .published-card {
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .published-card:hover {
+      opacity: 1;
+    }
+    .post-date-col.published-date {
+      background: rgba(35,78,82,0.2);
+      border-color: rgba(129,230,217,0.15);
+    }
+    .post-date-col.published-date .post-date-day {
+      color: #81e6d9;
+    }
+
     /* Empty state */
     .empty-state {
       text-align: center; padding: 4rem 2rem;
@@ -345,7 +366,7 @@
       </div>
     </div>
     <div class="header-meta">
-      <div>Next 4 posts</div>
+      <div>Content Calendar</div>
       <div>Last updated: <strong id="last-updated">—</strong></div>
     </div>
   </div>
@@ -368,6 +389,14 @@
       <div class="spinner"></div>
       Loading content calendar…
     </div>
+  </div>
+
+  <div class="published-section" id="published-section" style="display:none;">
+    <div class="section-header">
+      <span class="section-title">Recently Published</span>
+      <span class="post-count" id="published-count">—</span>
+    </div>
+    <div class="posts-grid" id="published-grid"></div>
   </div>
 </main>
 
@@ -465,22 +494,45 @@
 
   // ── Render ───────────────────────────────────────────────────────────────────
   function renderPosts(posts) {
+    // Split into upcoming (non-Published) and published
+    const upcoming  = (posts || []).filter(p => p.status !== 'Published');
+    const published = (posts || []).filter(p => p.status === 'Published')
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''))  // newest first
+      .slice(0, 8);  // show last 8
+
+    // Render upcoming
     const grid = document.getElementById('posts-grid');
-    if (!posts || !posts.length) {
+    if (!upcoming.length) {
       grid.innerHTML = `<div class="empty-state"><div class="icon">&#x1F30A;</div><p>No upcoming posts scheduled.</p></div>`;
-      return;
+    } else {
+      document.getElementById('post-count').textContent = upcoming.length + ' post' + (upcoming.length !== 1 ? 's' : '');
+      grid.innerHTML = upcoming.map(p => renderPostCard(p, false)).join('');
     }
 
-    document.getElementById('post-count').textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '');
+    // Render published section
+    const pubSection = document.getElementById('published-section');
+    const pubGrid    = document.getElementById('published-grid');
+    if (published.length) {
+      pubSection.style.display = 'block';
+      document.getElementById('published-count').textContent = published.length + ' post' + (published.length !== 1 ? 's' : '');
+      pubGrid.innerHTML = published.map(p => renderPostCard(p, true)).join('');
+    } else {
+      pubSection.style.display = 'none';
+    }
 
-    grid.innerHTML = posts.map(p => {
+    return;
+  }
+
+  function renderPostCard(p, isPublished) {
       const d       = formatDate(p.date);
       const days    = typeof p.days_until === 'number' ? p.days_until : daysUntil(p.date);
-      const urgent  = p.urgent || (days <= 3 && !['Approved','Scheduled','Published'].includes(p.status));
+      const urgent  = !isPublished && (p.urgent || (days <= 3 && !['Approved','Scheduled','Published'].includes(p.status)));
       const sClass  = statusClass(p.status);
       const sLabel  = statusLabel(p.status);
 
-      const daysTag = days === 0
+      const daysTag = isPublished
+        ? ''
+        : days === 0
         ? `<span class="tag tag-days">Today</span>`
         : days === 1
         ? `<span class="tag tag-days">Tomorrow</span>`
@@ -491,16 +543,19 @@
       // Action buttons
       let actions = '';
       if (p.canva_url) {
-        actions += `<a class="btn btn-canva" href="${p.canva_url}" target="_blank">Edit in Canva</a>`;
+        actions += `<a class="btn btn-canva" href="${p.canva_url}" target="_blank">${isPublished ? 'View in Canva' : 'Edit in Canva'}</a>`;
       }
-      if (p.status === 'To Approve') {
+      if (!isPublished && p.status === 'To Approve') {
         actions += `<button class="btn btn-approve" onclick="approvePost('${p.id}','${p.title.replace(/'/g,"\\'")}',this)">✓ Approve</button>`;
       }
 
       const uidBadge = p.unique_id ? `<span class="post-uid">${p.unique_id}</span>` : '';
+      const cardClass = isPublished ? 'post-card published-card' : `post-card ${urgent ? 'urgent' : ''}`;
+      const dateClass = isPublished ? 'post-date-col published-date' : 'post-date-col';
+
       return `
-        <div class="post-card ${urgent ? 'urgent' : ''}">
-          <div class="post-date-col">
+        <div class="${cardClass}">
+          <div class="${dateClass}">
             <div class="post-date-day">${d.day}</div>
             <div class="post-date-month">${d.month}</div>
             <div class="post-date-dow">${d.dow}</div>
@@ -516,13 +571,13 @@
           </div>
           <div class="post-actions">${actions}</div>
         </div>`;
-    }).join('');
   }
 
   function renderAlerts(posts) {
     const section = document.getElementById('alerts-section');
     const urgent  = (posts || []).filter(p =>
-      p.urgent || (daysUntil(p.date) <= 3 && !['Approved','Scheduled','Published'].includes(p.status))
+      p.status !== 'Published' &&
+      (p.urgent || (daysUntil(p.date) <= 3 && !['Approved','Scheduled','Published'].includes(p.status)))
     );
 
     if (!urgent.length) {
