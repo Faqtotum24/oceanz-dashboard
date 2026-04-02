@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-03-30T04:31:33.311Z",
-  "next_run": "2026-03-30T17:00:00.000Z",
+  "generated_at": "2026-04-02T07:14:57.473Z",
+  "next_run": "2026-04-03T17:00:00.000Z",
   "posts": [
     {
       "id": "32fc3481-6374-80aa-bc04-d3e7ff4d23cb",
       "unique_id": "N0005",
       "title": "Industrial Fat Simplification",
       "date": "2026-03-30",
-      "days_until": 0,
-      "status": "Scheduled",
+      "status": "Published",
       "canva_url": "https://www.canva.com/folder/FAHFOLb-Hhc",
       "notion_url": "https://www.notion.so/32fc3481637480aabc04d3e7ff4d23cb",
+      "days_until": -3,
       "urgent": false
     },
     {
@@ -18,34 +18,39 @@
       "unique_id": "N0010",
       "title": "Marine Ecosystem Complexity",
       "date": "2026-04-03",
-      "days_until": 4,
       "status": "Scheduled",
       "canva_url": "https://www.canva.com/folder/FAHFOXs9l7s",
       "notion_url": "https://www.notion.so/32fc3481637480dca79be7b7569ab668",
+      "days_until": 1,
       "urgent": false
     },
     {
-      "id": "330c3481-6374-800b-983b-e2dafa4fccf5",
-      "unique_id": "N0014",
-      "title": "The Reductionist Trap",
-      "date": "2026-04-07",
-      "days_until": 8,
+      "id": "335c3481-6374-80cd-95ed-e4c36d7bfacc",
+      "unique_id": "S0001",
+      "title": "The Bee Lesson",
+      "date": "2026-04-03",
       "status": "To Approve",
-      "canva_url": "https://www.canva.com/folder/FAHFN2vk3Gw",
-      "notion_url": "https://www.notion.so/330c34816374800b983be2dafa4fccf5",
-      "urgent": false
+      "canva_url": "https://www.canva.com/folder/FAHFrl0nNtA",
+      "notion_url": "https://www.notion.so/335c3481637480cd95ede4c36d7bfacc",
+      "days_until": 1,
+      "urgent": true
     },
     {
       "id": "330c3481-6374-80bc-b3e5-e37e2545976e",
       "unique_id": "N0019",
       "title": "A Broader view of Nutrition",
       "date": "2026-04-09",
-      "days_until": 10,
-      "status": "To Approve",
+      "status": "Scheduled",
       "canva_url": "https://www.canva.com/folder/FAHFN05O4ek",
       "notion_url": "https://www.notion.so/330c3481637480bcb3e5e37e2545976e",
+      "days_until": 7,
       "urgent": false
     }
   ],
-  "alerts": []
+  "alerts": [
+    {
+      "post_id": "335c3481-6374-80cd-95ed-e4c36d7bfacc",
+      "message": "⚠️ \"The Bee Lesson\" (S0001) is due in 1 day(s) but status is \"To Approve\" — needs approval before posting."
+    }
+  ]
 }
